@@ -23,15 +23,15 @@ class Quotes extends Component {
     //fetch the JSON data
     fetch(quotesURL)
       .then(result => {
-        return result.json()
+        return result.json();
       })
       .then(data => {
         console.log(data);
         // push JSON to component's state
         this.setState({ quotes: data.map(quote => {
-          // concat the desired results (linter doesn't like it though)
-          // eslint-disable-next-line
-          return ('"' + quote.quote + '"' + " --" + quote.source + " in " + quote.context);
+            // concat the desired results (linter doesn't like it though)
+            // eslint-disable-next-line
+            return ('"' + quote.quote + '"' + " --" + quote.source + " in " + quote.context);
           })
         });
       });
