@@ -11,12 +11,14 @@ class Display extends Component {
   };
 
   componentDidMount() {
+    //fetch the JSON data
     fetch(quotesURL)
       .then(result => {
         return result.json()
       })
       .then(data => {
         console.log(data);
+        //push JSON to component's state
         this.setState({ quotes: data });
       });
   };
@@ -24,11 +26,9 @@ class Display extends Component {
     render() {
     return (
       <div>
-        <ul>
-          {this.state.quotes.map(quote =>
-            <li>"{quote.quote}" --{quote.source} in {quote.context}</li>
-          )}
-        </ul>
+        {this.state.quotes.map(quote =>
+          <li>"{quote.quote}" --{quote.source} in {quote.context}</li>
+        )}
       </div>
     );
   };
