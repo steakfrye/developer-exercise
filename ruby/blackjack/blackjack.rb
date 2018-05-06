@@ -66,12 +66,12 @@ class Hand
 end
 
 class Player
-  attr_accessor :hand, :hand_value, :ace_count
+  attr_accessor :hand, :value, :ace_count
 
   def initialize
     @hand = Hand.new
     @ace_count = 0
-    @hand_value = @hand.hand_value
+    @value = @hand.hand_value
   end
 
   def list_cards
@@ -91,7 +91,7 @@ class Player
         print ", "
       end
     end
-    puts "Value =\ #{@hand_value}"
+    puts "Value =\ #{@hand.hand_value}"
   end
 
   def dealer_hand
@@ -101,19 +101,19 @@ class Player
   def bust?
     # if aces are included, lower hand value before declaring bust
     while (@ace_count > 0)
-      @hand_value -= 10
+      @value -= 10
       @ace_count -= 1
       puts "You're close to a bust... Let's lower your ace values."
     end
 
-    if @hand_value > 21
-      return true
+    if @value > 21
+      return True
     end
   end
 
   def blackjack?
-    if @hand_value == 21
-      return true
+    if @value == 21
+      return True
     end
   end
 end

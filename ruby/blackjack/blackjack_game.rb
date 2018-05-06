@@ -35,13 +35,12 @@ while (round > 0)
         if player.bust?
           player_hits = 0
           puts "Bust! You lose!"
-          return
         end
         if player.blackjack?
           player_hits = 0
-          puts "Blackjack, behy-beeee! You win!"
-          return
+          puts "Blackjack, bhaaay-beeee! You win!"
         end
+
       elsif hit_keep.match(/\A(keep|[k])\z/ix)
         puts "Smart move."
         player_hits = 0
@@ -58,13 +57,21 @@ while (round > 0)
       round = 0
     end
 
+    puts
     puts "Dealer's turn. He has:"
     puts dealer.list_cards
-    dealer.blackjack?
-    dealer.bust?
-    if dealer.hand_value > player.hand_value && !dealer.hand_value.bust?
+    if dealer.value <= 14
+      puts "Dealer wants to draw."
+      dealer.hand.hit
+      puts dealer.list_cards
+      if dealer.bust?
+        puts"Dealer loses. Which means..."
+        puts "You win!"
+      end
+    end
+    if (dealer.value >= player.value) && !dealer.bust?
       puts "Dealer wins!"
-    elsif player.hand_value > dealer.hand_value && !player.hand_value.bust?
+    elsif (player.value > dealer.value) && !player.bust?
       puts "You win!"
     end
 
