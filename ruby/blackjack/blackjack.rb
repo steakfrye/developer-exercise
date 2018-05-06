@@ -107,13 +107,13 @@ class Player
     end
 
     if @value > 21
-      return True
+      return true
     end
   end
 
   def blackjack?
     if @value == 21
-      return True
+      return true
     end
   end
 end

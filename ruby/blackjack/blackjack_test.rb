@@ -1,37 +1,6 @@
 require './blackjack.rb'
 require 'test/unit'
-
-class LoseTest < Test::Unit::TestCase
-  def setup
-    @player = Player.new
-    @player.value = 23
-  end
-
-  def test_bust?
-    assert_equal @player.bust?, True
-  end
-end
-
-class AceTest < Test::Unit::TestCase
-  def setup
-    @card = Card.new(:hearts, :ace, 11)
-    @player = Player.new
-  end
-
-  def test_ace_value_is_correct_if_automatic_bust
-    @player.hand.cards = [@card, [:spades, :ace, 11]]
-    @my_card = @player.hand.cards[0]
-    @player.bust?
-    assert_equal @player.value, 12
-  end
-
-  def test_ace_value_is_correct_is_11_by_default
-    @player.hand.cards = [@card, [:spades, :one, 10]]
-    @my_card = @player.hand.cards[0]
-    assert_equal @my_card.value, 11
-  end
-end
-
+  
 class CardTest < Test::Unit::TestCase
   def setup
     @card = Card.new(:hearts, :ten, 10)
