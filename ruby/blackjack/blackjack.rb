@@ -22,7 +22,7 @@ class Deck
     :jack  => 10,
     :queen => 10,
     :king  => 10,
-    :ace   => [11, 1]}
+    :ace   => 11}
 
   def initialize
     shuffle
@@ -54,17 +54,11 @@ class Hand
     2.times do
       @card = @deck.deal_card
       @cards.push(@card)
-
-      # ace default value is 11. If it automatically 'busts', value is 1
-      if @card.name == "ace" && @hand_value >= 10
-        @hand_value += @card.value[1].to_i
-      elsif @card.name == "ace" && @hand_value <= 10
-         @hand_value += @card.value[0].to_i
-      else
-        @hand_value += @card.value
-      end
+      @hand_value += @card.value
     end
+
     def hit
+      @card = @deck.deal_card
       @hand_value += @card.value
       @cards.push(@card)
     end
@@ -72,71 +66,54 @@ class Hand
 end
 
 class Player
-  attr_accessor :hand, :hand_value
+  attr_accessor :hand, :hand_value, :ace_count
 
   def initialize
     @hand = Hand.new
+    @ace_count = 0
+    @hand_value = @hand.hand_value
   end
 
   def list_cards
     # be sure to iterate through all cards, even after a 'hit'
     for i in (0...@hand.cards.length) do
       @my_card = @hand.cards[i]
-      print "#{@my_card.name.capitalize} of #{@my_card.suite.capitalize} "
+      # if an ace is used, keep track of it
+      if @my_card.name == "ace"
+        @ace_count += 1
+      end
+      # print cards
+      print "#{@my_card.name.capitalize} of #{@my_card.suite.capitalize}"
+      # add commas to make it look nice
+      if i == (@hand.cards.length - 1)
+        puts
+      else
+        print ", "
+      end
     end
-    puts
-    puts "Value =\ #{@hand.hand_value}"
+    puts "Value =\ #{@hand_value}"
   end
 
-  def bust
-    if @hand.hand_value > 21
-      puts "Bust!"
+  def dealer_hand
+    print "#{@hand.cards[0].name.capitalize} of #{@hand.cards[0].suite.capitalize} worth #{@hand.cards[0].value}"
+  end
+
+  def bust?
+    # if aces are included, lower hand value before declaring bust
+    while (@ace_count > 0)
+      @hand_value -= 10
+      @ace_count -= 1
+      puts "You're close to a bust... Let's lower your ace values."
+    end
+
+    if @hand_value > 21
+      return true
     end
   end
 
-  def blackjack
-    if @hand.hand_value == 21
-      puts "Blackjack, bahy-beee!"
+  def blackjack?
+    if @hand_value == 21
+      return true
     end
   end
-end
-
-###################GAME PLAY########################
-puts
-puts "You have sat down at the blackjack table. Would you like to play a round? Y/N"
-
-yes_no = $stdin.gets.chomp
-
-if yes_no.match(/\A(yes|[y])\z/ix)
-  player = Player.new
-  dealer = Player.new
-  puts "The dealer shuffles the cards."
-  play_deck = Deck.new
-  puts
-  puts "He slides a pair of cards towards you."
-  puts
-  puts player.list_cards
-  puts "Dealer draws two cards. One of them is #{}"
-  puts "Would you like to hit or keep? H/K"
-  hit_keep = $stdin.gets.chomp
-
-  if hit_keep.match(/\A(hit|[h])\z/ix)
-    player.hand.hit
-    puts player.list_cards
-
-  elsif hit_keep.match(/\A(keep|[k])\z/ix)
-    puts "Smart move."
-
-  else
-    puts "Say that again?"
-  end
-
-elsif yes_no.match(/\A(no|[n])\z/ix)
-  puts "That's too bad. Wimp."
-
-elsif yes_no == "demo"
-  puts "Simulated round, running!"
-
-else
-  puts "Invalid input. I'm calling the bouncer."
 end
