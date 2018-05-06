@@ -44,48 +44,99 @@ class Deck
 end
 
 class Hand
-  attr_accessor :cards
+  attr_accessor :card, :cards, :hand_value
 
   def initialize
     @cards = []
-  end
-end
-
-require 'test/unit'
-
-class CardTest < Test::Unit::TestCase
-  def setup
-    @card = Card.new(:hearts, :ten, 10)
-  end
-  
-  def test_card_suite_is_correct
-    assert_equal @card.suite, :hearts
-  end
-
-  def test_card_name_is_correct
-    assert_equal @card.name, :ten
-  end
-  def test_card_value_is_correct
-    assert_equal @card.value, 10
-  end
-end
-
-class DeckTest < Test::Unit::TestCase
-  def setup
     @deck = Deck.new
+    @hand_value = 0
+    # populate cards with 2 cards
+    2.times do
+      @card = @deck.deal_card
+      @cards.push(@card)
+
+      # ace default value is 11. If it automatically 'busts', value is 1
+      if @card.name == "ace" && @hand_value >= 10
+        @hand_value += @card.value[1].to_i
+      elsif @card.name == "ace" && @hand_value <= 10
+         @hand_value += @card.value[0].to_i
+      else
+        @hand_value += @card.value
+      end
+    end
+    def hit
+      @hand_value += @card.value
+      @cards.push(@card)
+    end
   end
-  
-  def test_new_deck_has_52_playable_cards
-    assert_equal @deck.playable_cards.size, 52
-  end
-  
-  def test_dealt_card_should_not_be_included_in_playable_cards
-    card = @deck.deal_card
-    assert(@deck.playable_cards.include?(card))
+end
+
+class Player
+  attr_accessor :hand, :hand_value
+
+  def initialize
+    @hand = Hand.new
   end
 
-  def test_shuffled_deck_has_52_playable_cards
-    @deck.shuffle
-    assert_equal @deck.playable_cards.size, 52
+  def list_cards
+    # be sure to iterate through all cards, even after a 'hit'
+    for i in (0...@hand.cards.length) do
+      @my_card = @hand.cards[i]
+      print "#{@my_card.name.capitalize} of #{@my_card.suite.capitalize} "
+    end
+    puts
+    puts "Value =\ #{@hand.hand_value}"
   end
+
+  def bust
+    if @hand.hand_value > 21
+      puts "Bust!"
+    end
+  end
+
+  def blackjack
+    if @hand.hand_value == 21
+      puts "Blackjack, bahy-beee!"
+    end
+  end
+end
+
+###################GAME PLAY########################
+puts
+puts "You have sat down at the blackjack table. Would you like to play a round? Y/N"
+
+yes_no = $stdin.gets.chomp
+
+if yes_no.match(/\A(yes|[y])\z/ix)
+  player = Player.new
+  dealer = Player.new
+  puts "The dealer shuffles the cards."
+  play_deck = Deck.new
+  puts
+  puts "He slides a pair of cards towards you."
+  puts
+  puts player.list_cards
+  puts "Dealer draws two cards. One of them is #{}"
+  puts "Would you like to hit or keep? H/K"
+  hit_keep = $stdin.gets.chomp
+
+  if hit_keep.match(/\A(hit|[h])\z/ix)
+    player.hand.hit
+    puts player.list_cards
+
+  elsif hit_keep.match(/\A(keep|[k])\z/ix)
+    puts "Smart move."
+
+  else
+    puts "Say that again?"
+  end
+
+elsif yes_no.match(/\A(no|[n])\z/ix)
+  puts "That's too bad. Wimp."
+
+elsif yes_no == "demo"
+  puts "Simulated round, running!"
+
+else
+  puts "Invalid input. I'm calling the bouncer."
 end
