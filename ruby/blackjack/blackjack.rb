@@ -56,7 +56,7 @@ class Hand
       @cards.push(@card)
       @hand_value += @card.value
     end
-
+    # function to add cards to hand
     def hit
       @card = @deck.deal_card
       @hand_value += @card.value
@@ -65,22 +65,22 @@ class Hand
   end
 end
 
+# player and dealer will be both considered "Player"
 class Player
   attr_accessor :hand, :value, :ace_count
 
   def initialize
     @hand = Hand.new
-    @ace_count = ace_count
+    @ace_count = 0
   end
 
   def list_cards
-    @ace_count = 0
     @value = @hand.hand_value
     # be sure to iterate through all cards, even after a 'hit'
     for i in (0...@hand.cards.length) do
       @my_card = @hand.cards[i]
       # if an ace is used, keep track of it
-      if @my_card.name == "ace"
+      if @my_card.name == :ace
         @ace_count += 1
       end
       # print cards
@@ -95,18 +95,22 @@ class Player
     puts "Value =\ #{@value}"
   end
 
+  # dealer only shows one card initially
   def dealer_hand
     print "#{@hand.cards[0].name.capitalize} of #{@hand.cards[0].suite.capitalize} worth #{@hand.cards[0].value}"
   end
 
-  def bust
-    # if aces are included, lower hand value before declaring bust
-    while @ace_count > 0 && @value > 21
-      @value -= 10
+  # ace value defaults to 11, but in case of bust will drop to 1
+  def ace
+    while @ace_count > 0 && @hand.hand_value > 21
+      @hand.hand_value -= 10
       @ace_count -= 1
-      puts "You're close to a bust... Let's lower your ace values."
+      puts "Lowering ace value."
     end
+  end
 
+  # bust and blackjack only need to return true or false
+  def bust
     if @value > 21
       return true
     end
