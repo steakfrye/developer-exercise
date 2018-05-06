@@ -70,11 +70,12 @@ class Player
 
   def initialize
     @hand = Hand.new
-    @ace_count = 0
-    @value = @hand.hand_value
+    @ace_count = ace_count
   end
 
   def list_cards
+    @ace_count = 0
+    @value = @hand.hand_value
     # be sure to iterate through all cards, even after a 'hit'
     for i in (0...@hand.cards.length) do
       @my_card = @hand.cards[i]
@@ -91,16 +92,16 @@ class Player
         print ", "
       end
     end
-    puts "Value =\ #{@hand.hand_value}"
+    puts "Value =\ #{@value}"
   end
 
   def dealer_hand
     print "#{@hand.cards[0].name.capitalize} of #{@hand.cards[0].suite.capitalize} worth #{@hand.cards[0].value}"
   end
 
-  def bust?
+  def bust
     # if aces are included, lower hand value before declaring bust
-    while (@ace_count > 0)
+    while @ace_count > 0 && @value > 21
       @value -= 10
       @ace_count -= 1
       puts "You're close to a bust... Let's lower your ace values."
@@ -111,7 +112,7 @@ class Player
     end
   end
 
-  def blackjack?
+  def blackjack
     if @value == 21
       return true
     end
